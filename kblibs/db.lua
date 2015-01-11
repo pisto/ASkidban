@@ -52,14 +52,14 @@ local meta = {
         if oldgroup.tag == tag then return end
         local ok, err = os.rename(oldfname, newfname)
         assert(ok, err)
-        db[AS], db.groups[tag], oldgroup[AS] = db.groups[tag], data
+        db[AS], db.groups[tag][AS], oldgroup[AS] = db.groups[tag], data
       else
         local dataf, err = io.open(newfname, "w")
         assert(dataf, err)
         dataf, err = dataf:write(emptyjson)
         assert(dataf, err)
         dataf:close()
-        db[AS], db.groups[tag] = db.groups[tag], data
+        db[AS], db.groups[tag][AS] = db.groups[tag], data
       end
       return data
     end,
