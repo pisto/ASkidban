@@ -38,5 +38,10 @@ assert(iplistf, err)
 for range in ranges:enum() do iplistf:write(tostring(range) .. '\n') end
 iplistf:close()
 
+local ipclistf, err = io.open("compiled/ipv4_compact", "w")
+assert(ipclistf, err)
+for range in ranges:enum() do ipclistf:write(range.ip * 0x40 + range.mask .. '\n') end
+ipclistf:close()
+
 print("Done.")
 return commit and os.execute"git reset HEAD . && git add compiled/ && git commit -m 'Recompiled.'"
