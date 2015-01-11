@@ -120,6 +120,7 @@ end
 local h = {
   {["<AS>[!-]"] = "Jump to AS number (! => add in database if non existent, - => delete)"},
   {d = "Decide AS numbers"},
+  {r = "Decide AS numbers with whois matching regex"},
   {c = "Commit"},
   {q = "Quit"},
 }
@@ -189,9 +190,9 @@ while true do
 
   local cmd, flag
   while not cmd do
-    io.write(colors.pink("Command (<AS>[!-]/d/c/q): "))
+    io.write(colors.pink("Command (<AS>[!-]/d/r/c/q): "))
     local l = io.read("*l"):lower()
-    cmd, flag = l:match("^ *([%dcdq]+)([%!%-]?) *$")
+    cmd, flag = l:match("^ *([%ddrcq]+)([%!%-]?) *$")
     flag = flags[flag]
     if not cmd or (force and not tonumber(cmd)) then helpcmd(h) end
   end
@@ -210,6 +211,19 @@ while true do
   elseif cmd == 'd' then for AS in pairs(db.groups.dunno) do
     if not inspectAS(AS, db[AS].tag) then break end
   end elseif cmd == 'c' then os.execute("git reset HEAD . && git add db/ && git commit")
+  elseif cmd == 'r' then
+    local regex
+    while not regex do
+      io.write(colors.pink("regex (lowercase): "))
+      regex = io.read("*l")
+      if regex == "" then goto nextcmd end
+      regex = pcall(function() (""):match(regex) end) and regex or print("Invalid pattern")
+    end
+    for AS in pairs(db.groups.dunno) do
+      local whois = fetchwhois(AS)
+      if not whois then break end
+      if whois:lower():match(regex) then if not inspectAS(AS, db[AS].tag) then break end end
+    end
   else return end
 
   :: nextcmd ::
