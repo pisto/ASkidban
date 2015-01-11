@@ -4,21 +4,8 @@
 
 ]]--
 
-local fp = require"kblibs.fp"
-local map = fp.map
-
-
-local function fetchwhois(AS, force)
-  local data = db[AS][AS]
-  if data.whois and not force then return data.whois end
-  local whois, err = io.popen("whois AS" .. AS)
-  if not whois then print("Cannot fetch whois: " .. err) return end
-  local msg, err = whois:read"*a"
-  whois:close()
-  if not msg then print("Cannot fetch whois: " .. err) return end
-  data.whois = msg
-  db:setdata(AS, data)
-end
+local fp, lambda = require"kblibs.fp", require"kblibs.lambda"
+local map, pick, Lr = fp.map, fp.pick, lambda.Lr
 
 
 local colors = map.mp(function(name, code) return name, function(str)
@@ -35,6 +22,99 @@ end end, {
   pink  = "\27[1;35m",
   orange  = "\27[0;33m"
 })
+
+local whois_ignore = {
+  "^[#%%]",
+  "^[^ ]*abuse",
+  "^[^ ]*tech",
+  "^[^ ]*phone",
+  "^[^ ]*mnt",
+  "^[^ ]*hdl",
+  "^[^ ]*source",
+  "^[^ ]*country",
+  "^[^ ]*updated",
+  "^[^ ]*regdate",
+  "^[^ ]*person",
+  "^[^ ]*fax",
+  "^[^ ]*address",
+  "^[^ ]*handle",
+  "^[^ ]*stateprov",
+  "^[^ ]*postal",
+  "^[^ ]*city",
+  "^[^ ]*email",
+  "^[^ ]*role",
+  "^[^ ]*changed",
+  "^[^ ]*created",
+  "^[ \t]*$",
+}
+
+local whois_http = {
+  "https?://(%l[%w%-%.]*%.%l%l+)",
+  "@(%l[%w%-%.]*%.%l%l+)",  --email
+  "%l[%w%-%.]*%.%l[%w%-%.]*%.%l%l+",  -- so.me.thing
+}
+
+local whois_http_ignore = {
+  "arin%.net",
+  "ripe%.net",
+  "registro%.br",
+  "apnic%.net",
+  "cert%.br",
+  "nic%.ad%.jp",
+  "whois%.",
+  "twnic%.net"
+}
+
+local maybe_kids = {
+  "vpn",
+  "hosting",
+  "vps",
+  "servers",
+  "anonym",
+}
+
+local maybe_sirs = {
+  "tele[ck]om",
+  "dynamic i?p? ?pool",
+  "broadband",
+  "landline",
+  "mobile",
+  "dsl",
+}
+
+local function firstmatch(line, regexes)
+  for _, regex in ipairs(regexes) do if line:match(regex) then return true end end
+end
+
+local function prettywhois(whois)
+  local colored, websites, inellipsis = "", {}, false
+  for line in whois:lower():gmatch("[^\n]+") do
+    map.tsi(websites, function(_, regex) return line:match(regex) end, whois_http)
+    if line == "" or firstmatch(line, whois_ignore) then
+      if not inellipsis then inellipsis, colored = true, colored .. colors.gray("[...]\n") end
+    else inellipsis, colored = false, colored .. line .. '\n' end
+  end
+  for _, regex in ipairs(maybe_kids) do colored = colored:gsub(regex, colors.red) end
+  for _, regex in ipairs(maybe_sirs) do colored = colored:gsub(regex, colors.green) end
+  print(colored)
+  websites = pick.p(function(match) return not firstmatch(match, whois_http_ignore) end, websites)
+  if next(websites) then print(colors.cyan(table.concat(map.lp(Lr"'http://'.._", websites), " "))) end
+end
+
+
+local function fetchwhois(AS, force)
+  local data = db[AS][AS]
+  if data.whois and not force then return data.whois end
+  local whois, err = io.popen("whois AS" .. AS)
+  if not whois then print("Cannot fetch whois: " .. err) return end
+  local msg, err = whois:read"*a"
+  whois:close()
+  if not msg then print("Cannot fetch whois: " .. err) return end
+  data.whois = msg
+  db:setdata(AS, data)
+  return msg
+end
+
 
 local h = {
   {["<AS>[!-]"] = "Jump to AS number (! => add in database if non existent, - => delete)"},
@@ -64,12 +144,10 @@ local abbrev = { d = "dunno", k = "kids", s = "sirs" }
 local tagcolor = { dunno = colors.blue, kids = colors.red, sirs = colors.green }
 
 local function inspectAS(AS, tag)
+  print("\n" .. colors.lightgray"========================================================================\n")
   local whois = fetchwhois(AS)
-  if whois then
-    print("\n" .. colors.lightgray"========================================================================\n")
-    --TODO print miniwhois
-  end
-  print("\n\n" .. tagcolor[tag]("AS" .. AS))
+  if whois then prettywhois(whois) end
+  print("\n" .. tagcolor[tag]("AS" .. AS))
 
   while true do
     local cmd
@@ -89,9 +167,7 @@ local function inspectAS(AS, tag)
       print(tagcolor[abbrev[cmd]]("AS" .. AS))
     elseif cmd == 'w' then
       local whois = fetchwhois(AS, true)
-      if whois then
-        --TODO print miniwhois
-      end
+      if whois then prettywhois(whois) end
     elseif cmd == 'p' then
       local whois = fetchwhois(AS)
       if whois then
