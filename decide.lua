@@ -106,11 +106,11 @@ local function fetchwhois(AS, force)
   local data = db[AS][AS]
   if data.whois and not force then return data.whois end
   local whois, err = io.popen("timeout 5 whois AS" .. AS)
-  if not whois then print("Cannot fetch whois: " .. err) return end
+  if not whois then print("Cannot fetch whois for AS" .. AS .. ": " .. err) return end
   local msg, err = whois:read"*a"
   local ok = whois:close()
-  if not ok then print("Cannot fetch whois (probably interrupted)") return end
-  if not msg then print("Cannot fetch whois: " .. err) return end
+  if not ok then print("Cannot fetch whois for AS" .. AS .. " (probably interrupted)") return end
+  if not msg then print("Cannot fetch whois for AS" .. AS .. ": " .. err) return end
   data.whois = msg
   db:setdata(AS, data)
   return msg
