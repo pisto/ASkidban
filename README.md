@@ -12,7 +12,7 @@ You first import IP and turnresolve their ASN:
 ```bash
 ./ASkidban -g /path/to/GeoIPASNum2.csv hits < my_hits_list
 ```
-`GeoIPASNum2.csv` is the [CSV GeoLite ASN](http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum2.zip) database.
+`GeoIPASNum2.csv` is the [CSV GeoLite ASN](http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum2.zip) database. `my_hits_list` is a list of IPs in dotted form, one per line.
 
 ###Decide the tags###
 
