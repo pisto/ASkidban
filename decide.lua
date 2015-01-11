@@ -120,6 +120,7 @@ end
 local h = {
   {["<AS>[!-]"] = "Jump to AS number (! => add in database if non existent, - => delete)"},
   {d = "Decide AS numbers"},
+  {k = "Review kids"},
   {r = "Decide AS numbers with whois matching regex"},
   {c = "Commit"},
   {q = "Quit"},
@@ -190,9 +191,9 @@ while true do
 
   local cmd, flag
   while not cmd do
-    io.write(colors.pink("Command (<AS>[!-]/d/r/c/q): "))
+    io.write(colors.pink("Command (<AS>[!-]/d/k/r/c/q): "))
     local l = io.read("*l"):lower()
-    cmd, flag = l:match("^ *([%ddrcq]+)([%!%-]?) *$")
+    cmd, flag = l:match("^ *([%ddkrcq]+)([%!%-]?) *$")
     flag = flags[flag]
     if not cmd or (force and not tonumber(cmd)) then helpcmd(h) end
   end
@@ -211,7 +212,9 @@ while true do
   elseif cmd == 'd' then for AS in pairs(db.groups.dunno) do
     if not inspectAS(AS, db[AS].tag) then break end
   end elseif cmd == 'c' then os.execute("git reset HEAD . && git add db/ && git commit")
-  elseif cmd == 'r' then
+  elseif cmd == 'k' then for AS in pairs(db.groups.kids) do
+    if not inspectAS(AS, db[AS].tag) then break end
+  end elseif cmd == 'r' then
     local regex
     while not regex do
       io.write(colors.pink("regex (lowercase): "))
