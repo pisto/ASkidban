@@ -9,6 +9,7 @@ assert(geoipf, err)
 print("Parsing " .. geoipfn)
 local geoipdb = require"kblibs.ASNum"(geoipf)
 geoipf:close()
+collectgarbage()
 
 local ip = require"kblibs.ip"
 
