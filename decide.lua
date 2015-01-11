@@ -221,8 +221,7 @@ while true do
     end
     for AS in pairs(db.groups.dunno) do
       local whois = fetchwhois(AS)
-      if not whois then break end
-      if whois:lower():match(regex) then if not inspectAS(AS, db[AS].tag) then break end end
+      if whois and whois:lower():match(regex) then if not inspectAS(AS, db[AS].tag) then break end end
     end
   else return end
 
