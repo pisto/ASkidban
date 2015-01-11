@@ -1,5 +1,7 @@
 #!/usr/bin/env lua
 
+pcall(function() require("debugger")() end)
+
 assert(pcall(function() loadstring"goto label ::label::"() end), "Lua version 5.2 or luajit is required")
 
 local lfs = require"lfs"
