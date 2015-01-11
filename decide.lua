@@ -43,8 +43,8 @@ local h = {
   {q = "Quit"},
 }
 local flags = { ['-'] = false, ['!'] = true }
-local function helpcmd()
-  for _, cmd in ipairs(h) do
+local function helpcmd(t)
+  for _, cmd in ipairs(t) do
     local code, msg = next(cmd)
     print("", colors.pink(code), msg)
   end
@@ -62,12 +62,7 @@ local ASh = {
 }
 local abbrev = { d = "dunno", k = "kids", s = "sirs" }
 local tagcolor = { dunno = colors.blue, kids = colors.red, sirs = colors.green }
-local function AShelpcmd()
-  for _, cmd in ipairs(ASh) do
-    local code, msg = next(cmd)
-    print("", colors.pink(code), msg)
-  end
-end
+
 local function inspectAS(AS, tag)
   local whois = fetchwhois(AS)
   if whois then
@@ -82,7 +77,7 @@ local function inspectAS(AS, tag)
       io.write(colors.pink("Command (-/d/s/k/w/p/n/q): "))
       local l = io.read("*l"):lower()
       cmd = l:match("^ *([%-dskwpnq]+) *$")
-      if not cmd then AShelpcmd() end
+      if not cmd then helpcmd(ASh) end
     end
 
     if cmd == '-' then
@@ -121,7 +116,7 @@ while true do
     local l = io.read("*l"):lower()
     cmd, flag = l:match("^ *([%dcdq]+)([%!%-]?) *$")
     flag = flags[flag]
-    if not cmd or (force and not tonumber(cmd)) then helpcmd() end
+    if not cmd or (force and not tonumber(cmd)) then helpcmd(h) end
   end
 
   local AS = tonumber(cmd)
