@@ -50,7 +50,7 @@ while #arg > 0 do
     assert(opt, "Unknown option " .. a)
     opt()
   else
-    cmd = commands[a]
+    cmd = commands[a:match("([^%.]+)%.?l?u?a?")]
     assert(cmd, "Unknown command " .. a)
   end
 end
