@@ -20,10 +20,10 @@ for AS in pairs(db.groups.kids) do
     :close()
   for _, range in ipairs(json.decode(j).ipv4s) do
     local _ip = ip.ip(range)
-    local ok, overlap = ranges:put(ip.ip(range))
+    local ok, overlap = ranges:put(_ip)
     if not ok and not overlap.matcher then
       for shadowed in pairs(overlap) do ranges:remove(shadowed) end
-      ranges:put(ip.ip(range))
+      ranges:put(_ip)
     end
   end
 end
