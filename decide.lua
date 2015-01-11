@@ -224,11 +224,9 @@ while true do
       if regex == "" then goto nextcmd end
       regex = pcall(function() (""):match(regex) end) and regex or print("Invalid pattern")
     end
-    for AS in pairs(db) do
-      if type(AS) == "number" then
-        local whois = fetchwhois(AS)
-        if whois and whois:lower():match(regex) then if not inspectAS(AS, db[AS].tag) then break end end
-      end
+    for AS in pairs(db.groups.dunno) do
+      local whois = fetchwhois(AS)
+      if whois and whois:lower():match(regex) then if not inspectAS(AS, db[AS].tag) then break end end
     end
   else return end
 
