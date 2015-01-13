@@ -152,7 +152,8 @@ local function fetchpdb(AS, force)
   if not msg then print("Cannot fetch PeeringDB for AS" .. AS .. ": " .. err) return end
   data.pdb = not msg:match"Record not found" and msg or false
   db:setdata(AS, data)
-  return msg
+  if not data.pdb then print("Not found.") end
+  return data.pdb
 end
 
 
