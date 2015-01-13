@@ -95,7 +95,7 @@ local function prettywhois(whois)
   local colored, websites, inellipsis = "", {}, false
   for line in whois:lower():gmatch("[^\n]+") do
     map.tsi(websites, function(_, regex) return line:match(regex) end, whois_http)
-    if line == "" or firstmatch(line, whois_ignore) then
+    if line == "" or firstmatch(line, whois_ignore) or firstmatch(line, whois_http_ignore) then
       if not inellipsis then inellipsis, colored = true, colored .. colors.gray("[...]\n") end
     else inellipsis, colored = false, colored .. line .. '\n' end
   end
