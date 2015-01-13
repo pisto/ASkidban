@@ -82,6 +82,7 @@ local maybe_sirs = {
   "landline",
   "mobile",
   "dsl",
+  "cable",
 }
 
 local function firstmatch(line, regexes)
