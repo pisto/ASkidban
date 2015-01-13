@@ -128,7 +128,7 @@ end
 local function fetchwhois(AS, force)
   local data = db[AS][AS]
   if data.whois and not force then return data.whois end
-  print("Fetching whois...")
+  io.write("Fetching whois... ")
   local whois, err = io.popen("timeout 5 whois AS" .. AS)
   if not whois then print("Cannot fetch whois for AS" .. AS .. ": " .. err) return end
   local msg, err = whois:read"*a"
@@ -137,13 +137,14 @@ local function fetchwhois(AS, force)
   if not msg then print("Cannot fetch whois for AS" .. AS .. ": " .. err) return end
   data.whois = msg
   db:setdata(AS, data)
+  print()
   return msg
 end
 
 local function fetchpdb(AS, force)
   local data = db[AS][AS]
   if data.pdb ~= nil and not force then return data.pdb end
-  print("Fetching PeeringDB...")
+  io.write ("Fetching PeeringDB... ")
   local whois, err = io.popen("timeout 5 whois -h peeringdb.com AS" .. AS)
   if not whois then print("Cannot fetch PeeringDB for AS" .. AS .. ": " .. err) return end
   local msg, err = whois:read"*a"
@@ -152,7 +153,7 @@ local function fetchpdb(AS, force)
   if not msg then print("Cannot fetch PeeringDB for AS" .. AS .. ": " .. err) return end
   data.pdb = not msg:match"Record not found" and msg or false
   db:setdata(AS, data)
-  if not data.pdb then print("Not found.") end
+  if not data.pdb then print("Not found.") else print() end
   return data.pdb
 end
 
