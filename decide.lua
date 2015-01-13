@@ -89,6 +89,7 @@ local function firstmatch(line, regexes)
 end
 
 local function prettywhois(whois)
+  print(colors.yellow("\tWhois:\n"))
   local colored, websites, inellipsis = "", {}, false
   for line in whois:lower():gmatch("[^\n]+") do
     map.tsi(websites, function(_, regex) return line:match(regex) end, whois_http)
@@ -101,12 +102,33 @@ local function prettywhois(whois)
   print(colored)
   websites = pick.p(function(match) return not firstmatch(match, whois_http_ignore) end, websites)
   if next(websites) then print(colors.cyan(table.concat(map.lp(Lr"'http://'.._", websites), " "))) end
+  print()
+end
+
+local typecolors = {
+  ["Educational/Research"] = colors.green,
+  ["Non-Profit"] = colors.green,
+  ["Cable/DSL/ISP"] = colors.green,
+  ["Content"] = colors.red,
+  ["Enterprise"] = colors.red,
+  ["NSP"] = colors.red,
+}
+local function prettypdb(pdb)
+  print(colors.yellow("\tPeeringDB:\n"))
+  local website = pdb:match"\nWebsite *: ([^\n]+)"
+  if website then print(colors.cyan(website)) end
+  local type = pdb:match"\nNetwork Type *: ([^\n]+)"
+  if type then print("Network Type: " .. (typecolors[type] or colors.blue)(type)) end
+  local ratio = pdb:match"\nTraffic Ratios *: ([^\n]+)"
+  if ratio then print("Traffic Ratios: " .. ratio) end
+  print()
 end
 
 
 local function fetchwhois(AS, force)
   local data = db[AS][AS]
   if data.whois and not force then return data.whois end
+  print("Fetching whois...")
   local whois, err = io.popen("timeout 5 whois AS" .. AS)
   if not whois then print("Cannot fetch whois for AS" .. AS .. ": " .. err) return end
   local msg, err = whois:read"*a"
@@ -114,6 +136,21 @@ local function fetchwhois(AS, force)
   if not ok then print("Cannot fetch whois for AS" .. AS .. " (probably interrupted)") return end
   if not msg then print("Cannot fetch whois for AS" .. AS .. ": " .. err) return end
   data.whois = msg
+  db:setdata(AS, data)
+  return msg
+end
+
+local function fetchpdb(AS, force)
+  local data = db[AS][AS]
+  if data.pdb ~= nil and not force then return data.pdb end
+  print("Fetching PeeringDB...")
+  local whois, err = io.popen("timeout 5 whois -h peeringdb.com AS" .. AS)
+  if not whois then print("Cannot fetch PeeringDB for AS" .. AS .. ": " .. err) return end
+  local msg, err = whois:read"*a"
+  local ok = whois:close()
+  if not ok then print("Cannot fetch PeeringDB for AS" .. AS .. " (probably interrupted)") return end
+  if not msg then print("Cannot fetch PeeringDB for AS" .. AS .. ": " .. err) return end
+  data.pdb = not msg:match"Record not found" and msg or false
   db:setdata(AS, data)
   return msg
 end
@@ -142,7 +179,8 @@ local ASh = {
   {s = "Sir"},
   {k = "Kid"},
   {w = "Fetch whois again"},
-  {p = "Print full whois"},
+  {l = "Print long whois"},
+  {p = "Fetch PeeringDB data again"},
   {n = "Next"},
   {q = "Quit"},
 }
@@ -150,17 +188,18 @@ local abbrev = { d = "dunno", k = "kids", s = "sirs" }
 local tagcolor = { dunno = colors.blue, kids = colors.red, sirs = colors.green }
 
 local function inspectAS(AS, tag)
+  local whois, pdb = fetchwhois(AS), fetchpdb(AS)
   print("\n" .. colors.lightgray"========================================================================\n")
-  local whois = fetchwhois(AS)
   if whois then prettywhois(whois) end
-  print("\n" .. tagcolor[tag]("AS" .. AS))
+  if pdb then prettypdb(pdb) end
+  print(tagcolor[tag]("AS" .. AS))
 
   while true do
     local cmd
     while not cmd do
-      io.write(colors.pink("Command (-/d/s/k/w/p/n/q): "))
+      io.write(colors.pink("Command (-/d/s/k/w/l/p/n/q): "))
       local l = io.read("*l"):lower()
-      cmd = l:match("^ *([%-dskwpnq]+) *$")
+      cmd = l:match("^ *([%-dskwlpnq]+) *$")
       if not cmd then helpcmd(ASh) end
     end
 
@@ -174,13 +213,16 @@ local function inspectAS(AS, tag)
     elseif cmd == 'w' then
       local whois = fetchwhois(AS, true)
       if whois then prettywhois(whois) end
-    elseif cmd == 'p' then
+    elseif cmd == 'l' then
       local whois = fetchwhois(AS)
       if whois then
         local less = os.execute("which less >/dev/null 2>/dev/null") and io.popen("less", "w")
         if less then less:write(whois) less:close()
         else print(whois) end
       end
+    elseif cmd == 'p' then
+      local pdb = fetchpdb(AS, true)
+      if pdb then prettypdb(pdb) end
     elseif cmd == 'n' then break
     elseif cmd == 'q' then return false
     end
@@ -218,7 +260,7 @@ while true do
   elseif cmd == 'r' then
     local regex
     while not regex do
-      io.write(colors.pink("regex (lowercase): "))
+      io.write(colors.pink("regex: "))
       regex = io.read("*l")
       if regex == "" then goto nextcmd end
       regex = pcall(function() (""):match(regex) end) and regex or print("Invalid pattern")
