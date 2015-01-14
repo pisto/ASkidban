@@ -22,8 +22,10 @@ You review the AS with the following command:
 ```
 This will bring up an interactive console, which will present to you the AS and their whois message in a summarized form (highlighting interesting words, ellipsizing unneded info and gathering URLs), and [PeeringDB](https://www.peeringdb.com/) information. Each ASN is either *dunno* (blue, undecided), *sir* (green, good) or *kid* (red, bad). Your job is to tag *dunnos* into *kids* or *sirs* (so that ASkidban will not ask you about them anymore). Here is a screenshot of how it looks like:
 ![A clearly bad ASN](http://i.imgur.com/EIcAjTj.png)
+
 Since this is clearly a *kid*, let us tag it so hitting `k`:
 ![Tagged as kid](http://i.imgur.com/2Ej5T0H.png)
+
 Refer to the built-in help for more info on how to navigate through the AS.
 
 Tagging an ASN simply means moving the associated file around in the `db/` folder. For example, if you tag ASN 1 from *dunno* to *kid*, ASkidban will simply rename `db/dunno/1` to `db/kids/1`.
