@@ -66,6 +66,7 @@ local whois_http_ignore = {
   "apjii%.or%.id",
   "idnic%.net",
   "vnnic%.net%.vn",
+  "lacnic%.net",
 }
 
 local maybe_kids = {
