@@ -10,7 +10,7 @@ The workflow of ASkidban is divided in three steps: hits, decide, compile.
 ###Seed the ASN list###
 You first import IP and turnresolve their ASN:
 ```bash
-./ASkidban -g /path/to/GeoIPASNum2.csv hits < my_hits_list
+./ASkidban.lua -g /path/to/GeoIPASNum2.csv hits < my_hits_list
 ```
 `GeoIPASNum2.csv` is the [CSV GeoLite ASN](http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum2.zip) database. `my_hits_list` is a list of IPs in dotted form, one per line.
 
@@ -18,7 +18,7 @@ You first import IP and turnresolve their ASN:
 
 You review the AS with the following command:
 ```bash
-./ASkidban decide
+./ASkidban.lua decide
 ```
 This will bring up an interactive console, which will present to you the AS and their whois message in a summarized form (highlighting interesting words, ellipsizing unneded info and gathering URLs), and [PeeringDB](https://www.peeringdb.com/) information. Each ASN is either *dunno* (blue, undecided), *sir* (green, good) or *kid* (red, bad). Your job is to tag *dunnos* into *kids* or *sirs* (so that ASkidban will not ask you about them anymore). Here is a screenshot of how it looks like:
 ![A clearly bad ASN](http://i.imgur.com/EIcAjTj.png)
@@ -34,7 +34,7 @@ Tagging an ASN simply means moving the associated file around in the `db/` folde
 
 Run the following command:
 ```bash
-./ASkidban compile
+./ASkidban.lua compile
 ```
 and you get three compiled lists:
 * `compiled/AS`: list of *kids*
