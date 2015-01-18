@@ -106,7 +106,7 @@ local function prettywhois(whois)
   for _, regex in ipairs(maybe_kids) do colored = colored:gsub(regex, colors.red) end
   for _, regex in ipairs(maybe_sirs) do colored = colored:gsub(regex, colors.green) end
   print(colored)
-  websites = pick.p(function(match) return not firstmatch(match, whois_http_ignore) end, websites)
+  websites = pick.p(function(match) return not firstmatch(match, whois_http_ignore) and not websites["www." .. match] end, websites)
   if next(websites) then print(colors.cyan(table.concat(map.lp(Lr"'http://'.._", websites), " "))) end
   print()
 end
