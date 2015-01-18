@@ -54,11 +54,13 @@ local meta = {
         assert(ok, err)
         db[AS], db.groups[tag][AS], oldgroup[AS] = db.groups[tag], data
       else
-        local dataf, err = io.open(newfname, "w")
+        local dataf, err = io.open(db.ignorefile, "w")
         assert(dataf, err)
         dataf, err = dataf:write(emptyjson)
         assert(dataf, err)
         dataf:close()
+        local ok, err = os.rename(db.ignorefile, newfname)
+        assert(ok, err)
         db[AS], db.groups[tag][AS] = db.groups[tag], data
       end
       return data
@@ -67,11 +69,13 @@ local meta = {
       local group = db[AS]
       assert(group, "AS " .. AS .. " is not in the database")
       local j = json.encode(data)
-      local dataf, err = io.open(db.path .. sep .. group.tag .. sep .. AS, "w")
+      local dataf, err = io.open(db.ignorefile, "w")
       assert(dataf, err)
       dataf, err = dataf:write(j)
       assert(dataf, err)
       dataf:close()
+      local ok, err = os.rename(db.ignorefile, db.path .. sep .. group.tag .. sep .. AS)
+      assert(ok, err)
       group[AS] = data
       return data
     end
@@ -79,7 +83,7 @@ local meta = {
 }
 
 function module.load(path)
-  local db = setmetatable({ groups = {}, path = path }, meta)
+  local db = setmetatable({ groups = {}, path = path, ignorefile = path .. sep .. ".ignoreme" }, meta)
   for _, tag in ipairs{"dunno", "kids", "sirs"} do
     print("Loaded " .. loadtag(db, path, tag) .. " " .. tag)
   end
