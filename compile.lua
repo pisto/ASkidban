@@ -7,10 +7,10 @@
 local fp, ip, json, curl = require"kblibs.fp", require"kblibs.ip", require"json", require"cURL"
 local map = fp.map
 
-local ASlist, ranges = "", ip.ipset()
-for AS in pairs(db.groups.kids) do
-  print("AS" .. AS)
-  ASlist = ASlist .. AS .. '\n'
+local function fetchranges(AS, force)
+  local data = db[AS][AS]
+  if data.ranges and not force then return data.ranges end
+  print("Ranges AS" .. AS)
   local j
   local function gather(s) j = j and j .. s or s return true end
   curl.easy()
@@ -18,8 +18,17 @@ for AS in pairs(db.groups.kids) do
     :setopt_writefunction(gather)
     :perform()
     :close()
-  for _, range in ipairs(json.decode(j).ipv4s) do
-    local _ip = ip.ip(range)
+  data.ranges = map.il(function(_, ips)
+    return tostring(assert(ip.ip(ips), "API returned bad range specification: " .. ips))
+  end, json.decode(j).ipv4s)
+  db:setdata(AS, data)
+  return data.ranges
+end
+
+local ASlist, ranges = "", ip.ipset()
+for AS in pairs(db.groups.kids) do
+  for _, ips in ipairs(fetchranges(AS, force)) do
+    local _ip = ip.ip(ips)
     local ok, overlap = ranges:put(_ip)
     if not ok and not overlap.matcher then
       for shadowed in pairs(overlap) do ranges:remove(shadowed) end
@@ -44,4 +53,4 @@ for range in ranges:enum() do ipclistf:write(range.ip * 0x40 + range.mask .. '\n
 ipclistf:close()
 
 print("Done.")
-return commit and os.execute"git reset HEAD . && git add compiled/ && git commit -m 'Recompiled.'"
+return commit and os.execute"git reset HEAD . && git add db/kids compiled/ && git commit -m 'Recompiled.'"

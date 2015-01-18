@@ -16,6 +16,7 @@ local map, Lr = fp.map, lambda.Lr
 
 geoipfn = oldcd .. sep .. "GeoIPASNum2.csv"
 commit = false
+force = false
 
 local function getarg(option)
   if #arg == 0 then error("Missing argument for " .. option) end
@@ -30,6 +31,7 @@ Options:
 	-h		show help
 	-g <file>	GeoIP ASnum database
 	-c		commit changes to git
+	-f		force (refresh cached IP ranges)
 
 Commands:
 	hits		import IP hits from stdin to seed AS numbers list
@@ -38,7 +40,8 @@ Commands:
 ]]
   end,
   g = function() geoipfn = getarg"-g" end,
-  c = function() commit = true end
+  c = function() commit = true end,
+  f = function() force = true end,
 }
 local commands = map.vm(Lr"_, loadfile(_ .. '.lua')", "hits", "decide", "compile")
 
