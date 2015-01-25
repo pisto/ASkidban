@@ -29,6 +29,11 @@ local ASlist, ranges = "", ip.ipset()
 for AS in pairs(db.groups.kids) do
   for _, ips in ipairs(fetchranges(AS, force)) do
     local _ip = ip.ip(ips)
+    local complement = ip.ip(bit32.bxor(_ip.ip, 2 ^ (32 - _ip.mask)), _ip.mask)
+    if ranges:matcherof(complement) == complement then
+      ranges:remove(complement)
+      _ip = ip.ip(_ip.ip, _ip.mask - 1)
+    end
     local ok, overlap = ranges:put(_ip)
     if not ok and not overlap.matcher then
       for shadowed in pairs(overlap) do ranges:remove(shadowed) end
