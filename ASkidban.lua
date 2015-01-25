@@ -10,8 +10,8 @@ local oldcd = lfs.currentdir()
 local script, sep = arg[0], package.config:sub(1, 1)
 lfs.chdir(script:match(".*%" .. sep))
 
-local fp, lambda = require"kblibs.fp", require"kblibs.lambda"
-local map, Lr = fp.map, lambda.Lr
+local fp, L = require"kblibs.fp", require"kblibs.lambda"
+local map = fp.map
 
 
 geoipfn = oldcd .. sep .. "GeoIPASNum2.csv"
@@ -43,7 +43,7 @@ Commands:
   c = function() commit = true end,
   f = function() force = true end,
 }
-local commands = map.vm(Lr"_, loadfile(_ .. '.lua')", "hits", "decide", "compile")
+local commands = map.vm(L"_, loadfile(_ .. '.lua')", "hits", "decide", "compile")
 
 local cmd
 while #arg > 0 do

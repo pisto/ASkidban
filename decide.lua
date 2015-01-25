@@ -4,8 +4,8 @@
 
 ]]--
 
-local fp, lambda = require"kblibs.fp", require"kblibs.lambda"
-local map, pick, Lr = fp.map, fp.pick, lambda.Lr
+local fp, L = require"kblibs.fp", require"kblibs.lambda"
+local map, pick = fp.map, fp.pick
 
 
 local colors = map.mp(function(name, code) return name, function(str)
@@ -107,7 +107,7 @@ local function prettywhois(whois)
   for _, regex in ipairs(maybe_sirs) do colored = colored:gsub(regex, colors.green) end
   print(colored)
   websites = pick.p(function(match) return not firstmatch(match, whois_http_ignore) and not websites["www." .. match] end, websites)
-  if next(websites) then print(colors.cyan(table.concat(map.lp(Lr"'http://'.._", websites), " "))) end
+  if next(websites) then print(colors.cyan(table.concat(map.lp(L"'http://'.._", websites), " "))) end
   print()
 end
 

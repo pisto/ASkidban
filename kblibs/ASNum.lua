@@ -4,8 +4,8 @@
 
 ]]--
 
-local fp, lambda, ip = require"kblibs.fp", require"kblibs.lambda", require"kblibs.ip"
-local map, Lr = fp.map, lambda.Lr
+local fp, L, ip = require"kblibs.fp", require"kblibs.lambda", require"kblibs.ip"
+local map = fp.map
 
 --balanced binary search tree
 local function populate(records, s, e)
@@ -33,7 +33,7 @@ return function(geoipf)
     local r = map.lv(tonumber, l:match'^(%d+),(%d+),"AS(%d+) ')
     if r[1] then table.insert(records, r) end
   end
-  table.sort(records, Lr"_1[1] < _2[1]")
+  table.sort(records, L"_1[1] < _2[1]")
   for i = 1, #records - 1 do assert(records[i][2] < records[i + 1][1], "Overlapping ranges in ASNum database") end
 
   return setmetatable(populate(records, 1, #records), meta)

@@ -1,5 +1,4 @@
-local lambda = require"kblibs.lambda"
-local L = lambda.L
+local L = require"kblibs.lambda"
 
 local function noop() end
 
