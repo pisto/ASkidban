@@ -52,13 +52,14 @@ ASlistf:close()
 
 local iplistf, err = io.open("compiled/ipv4", "w")
 assert(iplistf, err)
-for range in ranges:enum() do iplistf:write(tostring(range) .. '\n') end
-iplistf:close()
-
 local ipclistf, err = io.open("compiled/ipv4_compact", "w")
 assert(ipclistf, err)
-for range in ranges:enum() do ipclistf:write(range.ip * 0x40 + range.mask .. '\n') end
+for range in ranges:enum() do
+  iplistf:write(tostring(range) .. '\n')
+  ipclistf:write(range.ip * 0x40 + range.mask .. '\n')
+end
 ipclistf:close()
+iplistf:close()
 
 print("Done.")
 return commit and os.execute"git reset HEAD . && git add db/kids compiled/ && git commit -m 'Recompiled.'"
