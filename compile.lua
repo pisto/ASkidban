@@ -45,21 +45,14 @@ for AS in pairs(db.groups.kids) do
   end
 end
 
-local ASlistf, err = io.open("compiled/AS", "w")
-assert(ASlistf, err)
-ASlistf:write(ASlist)
-ASlistf:close()
+assert(io.open("compiled/AS", "w")):write(ASlist):close()
 
-local iplistf, err = io.open("compiled/ipv4", "w")
-assert(iplistf, err)
-local ipclistf, err = io.open("compiled/ipv4_compact", "w")
-assert(ipclistf, err)
+local iplistf, ipclistf = assert(io.open("compiled/ipv4", "w")), assert(io.open("compiled/ipv4_compact", "w"))
 for range in ranges:enum() do
   iplistf:write(tostring(range) .. '\n')
   ipclistf:write(range.ip * 0x40 + range.mask .. '\n')
 end
-ipclistf:close()
-iplistf:close()
+iplistf:close() ipclistf:close()
 
 print("Done.")
 return commit and os.execute"git reset HEAD . && git add db/kids compiled/ && git commit -m 'Recompiled.'"

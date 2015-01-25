@@ -19,12 +19,10 @@ local function loadtag(t, path, name)
     local AS = tonumber(file)
     local fname = path .. sep .. name .. sep .. file
     if not AS or lfs.attributes(fname, "mode") ~= "file" then print("stray file in database: " .. file) goto next end
-    if t[AS] then error("database inconsistency: duplicate AS" .. AS) end
-    local dataf = io.open(fname)
-    if not dataf then error("cannot read " .. fname) end
-    local ok, data = pcall(function() return json.decode(dataf:read"*a") end)
+    assert(not t[AS], "database inconsistency: duplicate AS" .. AS)
+    local dataf = assert(io.open(fname))
+    local data = json.decode(dataf:read"*a")
     dataf:close()
-    if not ok then error("Invalid json in " .. fname) end
     t[AS], group[AS] = group, data
     tot = tot + 1
     :: next ::
@@ -40,8 +38,7 @@ local meta = {
       local oldfname = oldgroup and db.path .. sep .. oldgroup.tag .. sep .. AS
       if not tag then
         if oldgroup then
-          local ok, err = os.remove(oldfname)
-          assert(ok, err)
+          assert(os.remove(oldfname))
           db[AS], oldgroup[AS] = nil
         end
         return
@@ -50,17 +47,11 @@ local meta = {
       local newfname, data = db.path .. sep .. tag .. sep .. AS, oldgroup and oldgroup[AS] or {}
       if oldgroup then
         if oldgroup.tag == tag then return end
-        local ok, err = os.rename(oldfname, newfname)
-        assert(ok, err)
+        assert(os.rename(oldfname, newfname))
         db[AS], db.groups[tag][AS], oldgroup[AS] = db.groups[tag], data
       else
-        local dataf, err = io.open(db.ignorefile, "w")
-        assert(dataf, err)
-        dataf, err = dataf:write(emptyjson)
-        assert(dataf, err)
-        dataf:close()
-        local ok, err = os.rename(db.ignorefile, newfname)
-        assert(ok, err)
+        assert(assert(io.open(db.ignorefile, "w")):write(emptyjson)):close()
+        assert(os.rename(db.ignorefile, newfname))
         db[AS], db.groups[tag][AS] = db.groups[tag], data
       end
       return data
@@ -69,13 +60,8 @@ local meta = {
       local group = db[AS]
       assert(group, "AS " .. AS .. " is not in the database")
       local j = json.encode(data)
-      local dataf, err = io.open(db.ignorefile, "w")
-      assert(dataf, err)
-      dataf, err = dataf:write(j)
-      assert(dataf, err)
-      dataf:close()
-      local ok, err = os.rename(db.ignorefile, db.path .. sep .. group.tag .. sep .. AS)
-      assert(ok, err)
+      assert(assert(io.open(db.ignorefile, "w")):write(j)):close()
+      assert(os.rename(db.ignorefile, db.path .. sep .. group.tag .. sep .. AS))
       group[AS] = data
       return data
     end

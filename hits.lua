@@ -4,8 +4,7 @@
 
 ]]--
 
-local geoipf, err = io.open(geoipfn)
-assert(geoipf, err)
+local geoipf = assert(io.open(geoipfn))
 print("Parsing " .. geoipfn)
 local geoipdb = require"kblibs.ASNum"(geoipf)
 geoipf:close()

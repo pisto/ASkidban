@@ -19,7 +19,7 @@ commit = false
 force = false
 
 local function getarg(option)
-  if #arg == 0 then error("Missing argument for " .. option) end
+  assert(#arg > 0, "Missing argument for " .. option)
   return table.remove(arg, 1)
 end
 local options = {
@@ -48,14 +48,8 @@ local commands = map.vm(Lr"_, loadfile(_ .. '.lua')", "hits", "decide", "compile
 local cmd
 while #arg > 0 do
   local a = table.remove(arg, 1)
-  if a:sub(1, 1) == '-' then
-    local opt = options[a:sub(2)]
-    assert(opt, "Unknown option " .. a)
-    opt()
-  else
-    cmd = commands[a:match("([^%.]+)%.?l?u?a?")]
-    assert(cmd, "Unknown command " .. a)
-  end
+  if a:sub(1, 1) == '-' then assert(options[a:sub(2)], "Unknown option " .. a)()
+  else cmd = assert(commands[a:match("([^%.]+)%.?l?u?a?")], "Unknown command " .. a) end
 end
 
 
