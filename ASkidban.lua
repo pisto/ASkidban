@@ -3,6 +3,7 @@
 pcall(function() require("debugger")() end)
 
 assert(pcall(function() loadstring"goto label ::label::"() end), "Lua version 5.2 or luajit is required")
+bit32 = bit32 or bit or require"bit"
 
 local lfs = require"lfs"
 
