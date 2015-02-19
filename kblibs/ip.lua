@@ -14,7 +14,7 @@ local clearbits = hasbit32
 local function matches(ipmask, ip) return clearbits(ip.ip, ipmask.mask) == ipmask.ip end
 local function ipstring(ipmask)
   local ip, mask = ipmask.ip, ipmask.mask
-  return string.format("%d.%d.%d.%d%s", (ip/0x1000000)%0x100, (ip/0x10000)%0x100, (ip/0x100)%0x100, ip%0x100, mask < 32 and ('/' .. mask) or '')
+  return string.format("%d.%d.%d.%d%s", math.modf(ip/0x1000000)%0x100, math.modf(ip/0x10000)%0x100, math.modf(ip/0x100)%0x100, ip%0x100, mask < 32 and ('/' .. mask) or '')
 end
 local function sameip(ip1, ip2) return ip1.ip == ip2.ip and ip1.mask == ip2.mask end
 
@@ -98,4 +98,26 @@ local function ipset(min)
     { matcherof = matcherof, matchesof = matchesof, remove = remove, put = put, min = min, enum = enum }})
 end
 
-return {ip = ip, ipset = ipset}
+--lipset, does not check inconsistencies (overlaps, removing non existent ranges etc) and does not provide :matchesof
+
+local function remove_l(ipset, ip)
+  ipset[ipkey(ip.ip, ip.mask)] = nil
+  return true
+end
+
+local function put_l(ipset, ip)
+  ipset[ipkey(ip.ip, ip.mask)] = true
+  return true
+end
+
+local function enum_l(ipset)
+  return map.zp(keyip, ipset)
+end
+
+local function ipset_l(min)
+  min = min ~= nil and tonumber(min) or 0
+  return setmetatable({}, {__index =
+    { matcherof = matcherof, remove = remove_l, put = put_l, min = min, enum = enum_l }})
+end
+
+return {ip = ip, ipset = ipset, lipset = ipset_l}
