@@ -9,7 +9,7 @@ local map, pick = fp.map, fp.pick
 
 
 local colors = map.mp(function(name, code) return name, function(str)
-  return code .. str .. "\27[0m"
+  return code .. tostring(str) .. "\27[0m"
 end end, {
   red   = "\27[1;31m",
   green = "\27[1;32m",
