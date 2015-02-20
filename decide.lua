@@ -204,18 +204,18 @@ local function inspectAS(AS, tag)
     elseif cmd == 'e' then
       if e == "" then
         if not next(exclusions) then print("No exclusions.")
-        else for exclusion in pairs(exclusions) do print(colors.yellow(exclusion)) end end
+        else for exclusion in pairs(exclusions) do print(colors.orange(exclusion)) end end
       else
         e = ip.ip(e)
         for exclusion in pairs(exclusions) do if exclusion == e then
           exclusions[exclusion] = nil
           setexclusions(AS, exclusions)
-          print(colors.red("Removed") .. " exclusion " .. colors.yellow(exclusion))
+          print(colors.red("Removed") .. " exclusion " .. colors.orange(exclusion))
           goto nextcmd
         end end
         exclusions[e] = true
         setexclusions(AS, exclusions)
-        print(colors.green("Added") .. " exclusion " .. colors.yellow(e))
+        print(colors.green("Added") .. " exclusion " .. colors.orange(e))
       end
     end
     :: nextcmd ::
