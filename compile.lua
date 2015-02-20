@@ -4,7 +4,7 @@
 
 ]]--
 
-local fp, ip, json, curl = require"kblibs.fp", require"kblibs.ip", require"json", require"cURL"
+local L, fp, ip, json, curl = require"kblibs.lambda", require"kblibs.fp", require"kblibs.ip", require"json", require"cURL"
 local map = fp.map
 
 local function fetchranges(AS, force)
@@ -25,24 +25,53 @@ local function fetchranges(AS, force)
   return data.ranges
 end
 
-local ASlist, ranges = "", ip.ipset()
+local function checkexclusion(set, ip, AS, isexclusion)
+  local matcher, matcherAS = set:matcherof(ip)
+  if matcher then
+    if isexclusion then error(("AS%d:%s matches exclusion AS%d:%s"):format(matcherAS, matcher, AS, ip))
+    else error(("AS%d:%s matches exclusion AS%d:%s"):format(AS, ip, matcherAS, matcher)) end
+  end
+  local matched = set:matchesof(ip)
+  if next(matched) then
+    matched = map.lp(L"('AS%d:%s'):format(_2, _1)", matched)
+    if isexclusion then error(("%s are matched by exclusion AS%d:%s"):format(table.concat(matched, ", "), AS, ip))
+    else error(("AS%d:%s matches exclusions %s"):format(AS, ip, matched)) end
+  end
+end
+
+local ASlist, ranges, exclusions = "", ip.ipset(8), ip.ipset(8)
 for AS in pairs(db.groups.kids) do
+  ASlist = ASlist .. AS .. '\n'
+  local ASexclusions = getexclusions(AS)
   for _, ips in ipairs(fetchranges(AS, force)) do
     local _ip = ip.ip(ips)
+    for ASexclusion in pairs(ASexclusions) do if ASexclusion == _ip then
+      checkexclusion(ranges, ASexclusion, AS, true)
+      local ok, shadows = exclusions:put(ASexclusion, AS)
+      if not ok and not shadows.matcher then
+        for shadow in pairs(shadows) do exclusions:remove(shadow) end
+        exclusions:put(ip, AS)
+      end
+      ASexclusions[ASexclusion] = nil
+      goto nextrange
+    end end
+    checkexclusion(exclusions, _ip, AS, false)
     while true do
       local complement = ip.ip(bit32.bxor(_ip.ip, 2 ^ (32 - _ip.mask)), _ip.mask)
       if ranges:matcherof(complement) == complement then
         ranges:remove(complement)
         _ip = ip.ip(_ip.ip, _ip.mask - 1)
-        ranges:put(_ip)
+        ranges:put(_ip, AS)
       else break end
     end
-    local ok, overlap = ranges:put(_ip)
+    local ok, overlap = ranges:put(_ip, AS)
     if not ok and not overlap.matcher then
       for shadowed in pairs(overlap) do ranges:remove(shadowed) end
-      ranges:put(_ip)
+      ranges:put(_ip, AS)
     end
+    :: nextrange ::
   end
+  if next(ASexclusions) then error(("AS%d does not announce anymore excluded ranges %s"):format(AS, table.concat(map.lp(tostring, ASexclusions), ", "))) end
 end
 
 assert(io.open("compiled/AS", "w")):write(ASlist):close()

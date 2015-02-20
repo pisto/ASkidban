@@ -86,6 +86,16 @@ function fetchpdb(AS, force)
   return data.pdb
 end
 
+function getexclusions(AS)
+  return map.si(function(_, sip) return assert(ip.ip(sip), "Invalid exclusion range in AS" .. AS) end, db[AS][AS].exclusions or {})
+end
+
+function setexclusions(AS, exclusions)
+  local data = db[AS][AS]
+  data.exclusions = next(exclusions) and map.lp(tostring, exclusions) or nil
+  db:setdata(AS, data)
+end
+
 
 db = require"kblibs.db".load"db"
 print("Database check succeeded.")

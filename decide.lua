@@ -4,7 +4,7 @@
 
 ]]--
 
-local fp, L = require"kblibs.fp", require"kblibs.lambda"
+local fp, L, ip = require"kblibs.fp", require"kblibs.lambda", require"kblibs.ip"
 local map, pick = fp.map, fp.pick
 
 
@@ -156,6 +156,7 @@ local ASh = {
   {w = "Fetch whois again"},
   {l = "Print long whois"},
   {p = "Fetch PeeringDB data again"},
+  {["e [ex]"] = "Print exclusions, or set/get exclusion 'ex'"},
   {n = "Next"},
   {q = "Quit"},
 }
@@ -163,19 +164,19 @@ local abbrev = { d = "dunno", k = "kids", s = "sirs" }
 local tagcolor = { dunno = colors.blue, kids = colors.red, sirs = colors.green }
 
 local function inspectAS(AS, tag)
-  local whois, pdb = fetchwhois(AS), fetchpdb(AS)
+  local whois, pdb, exclusions = fetchwhois(AS), fetchpdb(AS), getexclusions(AS)
   print("\n" .. colors.lightgray"========================================================================\n")
   if whois then prettywhois(whois) end
   if pdb then prettypdb(pdb) end
   print(tagcolor[tag]("AS" .. AS))
 
   while true do
-    local cmd
+    local cmd, e
     while not cmd do
-      io.write(colors.pink("Command (-/d/s/k/w/l/p/n/q): "))
+      io.write(colors.pink("Command (-/d/s/k/w/l/p/e/n/q): "))
       local l = io.read("*l"):lower()
-      cmd = l:match("^ *([%-dskwlpnq]+) *$")
-      if not cmd then helpcmd(ASh) end
+      cmd, e = l:match("^ *([%-dskwlpnqe]) *([%d%./]*)$")
+      if not cmd or cmd == "e" and e ~= "" and not ip.ip(e)  then helpcmd(ASh) end
     end
 
     if cmd == '-' then
@@ -200,7 +201,24 @@ local function inspectAS(AS, tag)
       if pdb then prettypdb(pdb) end
     elseif cmd == 'n' then break
     elseif cmd == 'q' then return false
+    elseif cmd == 'e' then
+      if e == "" then
+        if not next(exclusions) then print("No exclusions.")
+        else for exclusion in pairs(exclusions) do print(colors.yellow(exclusion)) end end
+      else
+        e = ip.ip(e)
+        for exclusion in pairs(exclusions) do if exclusion == e then
+          exclusions[exclusion] = nil
+          setexclusions(AS, exclusions)
+          print(colors.red("Removed") .. " exclusion " .. colors.yellow(exclusion))
+          goto nextcmd
+        end end
+        exclusions[e] = true
+        setexclusions(AS, exclusions)
+        print(colors.green("Added") .. " exclusion " .. colors.yellow(e))
+      end
     end
+    :: nextcmd ::
   end
   return true
 
