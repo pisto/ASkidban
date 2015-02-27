@@ -4,7 +4,7 @@
 
 ]]--
 
-local L, fp, ip, json, curl = require"kblibs.lambda", require"kblibs.fp", require"kblibs.ip", require"json", require"cURL"
+local L, fp, ip, json, curl = require"kblibs.lambda", require"kblibs.fp", require"kblibs.ip", require"dkjson", require"cURL"
 local map = fp.map
 
 local function fetchranges(AS, force)

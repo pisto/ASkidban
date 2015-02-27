@@ -4,7 +4,7 @@
 
 ]]--
 
-local lfs, json, fp, lambda = require"lfs", require"json", require"kblibs.fp", require"kblibs.lambda"
+local lfs, json, fp, lambda = require"lfs", require"dkjson", require"kblibs.fp", require"kblibs.lambda"
 local map = fp.map
 
 local module = {}
@@ -59,7 +59,7 @@ local meta = {
     setdata = function(db, AS, data)
       local group = db[AS]
       assert(group, "AS " .. AS .. " is not in the database")
-      local j = json.encode(data)
+      local j = json.encode(data, {indent = true})
       assert(assert(io.open(db.ignorefile, "w")):write(j)):close()
       assert(os.rename(db.ignorefile, db.path .. sep .. group.tag .. sep .. AS))
       group[AS] = data
