@@ -57,7 +57,7 @@ for AS in pairs(db.groups.kids) do
     end end
     checkexclusion(exclusions, _ip, AS, false)
     while true do
-      local complement = ip.ip(bit32.bxor(_ip.ip, 2 ^ (32 - _ip.mask)), _ip.mask)
+      local complement = ip.ip(bit32.bxor(_ip.ip, 2 ^ (32 - _ip.mask)) % 2^32, _ip.mask)
       if ranges:matcherof(complement) == complement then
         ranges:remove(complement)
         _ip = ip.ip(_ip.ip, _ip.mask - 1)
@@ -74,7 +74,9 @@ for AS in pairs(db.groups.kids) do
   if next(ASexclusions) then error(("AS%d does not announce anymore excluded ranges %s"):format(AS, table.concat(map.lp(tostring, ASexclusions), ", "))) end
 end
 
-assert(io.open("compiled/AS", "w")):write(ASlist):close()
+local ASlistf = assert(io.open("compiled/AS", "w"))
+assert(ASlistf:write(ASlist))
+ASlistf:close()
 
 local iplistf, ipclistf = assert(io.open("compiled/ipv4", "w")), assert(io.open("compiled/ipv4_compact", "w"))
 for range in ranges:enum() do

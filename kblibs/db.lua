@@ -50,7 +50,9 @@ local meta = {
         assert(os.rename(oldfname, newfname))
         db[AS], db.groups[tag][AS], oldgroup[AS] = db.groups[tag], data
       else
-        assert(assert(io.open(db.ignorefile, "w")):write(emptyjson)):close()
+        local f = assert(io.open(db.ignorefile, "w"))
+        assert(f:write(emptyjson))
+        f:close()
         assert(os.rename(db.ignorefile, newfname))
         db[AS], db.groups[tag][AS] = db.groups[tag], data
       end
@@ -60,7 +62,9 @@ local meta = {
       local group = db[AS]
       assert(group, "AS " .. AS .. " is not in the database")
       local j = json.encode(data, {indent = true})
-      assert(assert(io.open(db.ignorefile, "w")):write(j)):close()
+      local f = assert(io.open(db.ignorefile, "w"))
+      assert(f:write(j))
+      f:close()
       assert(os.rename(db.ignorefile, db.path .. sep .. group.tag .. sep .. AS))
       group[AS] = data
       return data
