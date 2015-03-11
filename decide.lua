@@ -193,7 +193,7 @@ local function inspectAS(AS, tag)
       local whois = fetchwhois(AS)
       if whois then
         local less = os.execute("which less >/dev/null 2>/dev/null") and io.popen("less", "w")
-        if less then less:write(whois):close()
+        if less then less:write(whois) less:close()
         else print(whois) end
       end
     elseif cmd == 'p' then
