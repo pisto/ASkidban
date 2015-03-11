@@ -20,7 +20,7 @@ for l in io.lines() do
     if not _ip then print("Bad format " .. l) goto next
     else
       AS = geoipdb(_ip)
-      if not AS then print("Cannot find AS for " .. tostring(_ip)) end
+      if not AS then print("Cannot find AS for " .. tostring(_ip)) goto next end
     end
   end
   if not db[AS] then db:settag(AS, "dunno") print(AS) end
