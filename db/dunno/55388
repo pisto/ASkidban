@@ -1,1 +1,3 @@
-[]
+{
+  "whois":"[ JPNIC database provides information regarding IP address and ASN. Its use   ]\n[ is restricted to network administration purposes. For further information,  ]\n[ use 'whois -h whois.nic.ad.jp help'. To only display English output,        ]\n[ add '/e' at the end of command, e.g. 'whois -h whois.nic.ad.jp xxx/e'.      ]\n\nAutonomous System Information:\na. [AS Number]                  55388\nb. [AS Name]                    ASJ\ng. [Organization]               ASJ INC.\nm. [Administrative Contact]     YN4766JP\nn. [Technical Contact]          TC062JP\nn. [Technical Contact]          MH5016JP\nn. [Technical Contact]          YN4766JP\no. [IMPORT]                     \np. [EXPORT]                     \n[Assigned Date]                 2010/10/05\n[Last Update]                   2012/01/23 12:37:43(JST)\n"
+}
