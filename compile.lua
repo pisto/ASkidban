@@ -40,7 +40,7 @@ local function checkexclusion(set, ip, AS, isexclusion)
 end
 
 local ASlist, ranges, exclusions = "", ip.ipset(8), ip.ipset(8)
-for AS in pairs(db.groups.kids) do
+for _, AS in ipairs(table.sort(map.lp(L"_", db.groups.kids))) do
   ASlist = ASlist .. AS .. '\n'
   local ASexclusions = getexclusions(AS)
   for _, ips in ipairs(fetchranges(AS, force)) do
@@ -79,7 +79,7 @@ assert(ASlistf:write(ASlist))
 ASlistf:close()
 
 local iplistf, ipclistf = assert(io.open("compiled/ipv4", "w")), assert(io.open("compiled/ipv4_compact", "w"))
-for range in ranges:enum() do
+for _, range in ipairs(table.sort(map.lf(L"_", ranges:enum()), L"_1.ip < _2.ip")) do
   iplistf:write(tostring(range) .. '\n')
   ipclistf:write(range.ip * 0x40 + range.mask .. '\n')
 end
