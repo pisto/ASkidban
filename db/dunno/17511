@@ -1,3 +1,0 @@
-{
-  "whois":"[ JPNIC database provides information regarding IP address and ASN. Its use   ]\n[ is restricted to network administration purposes. For further information,  ]\n[ use 'whois -h whois.nic.ad.jp help'. To only display English output,        ]\n[ add '/e' at the end of command, e.g. 'whois -h whois.nic.ad.jp xxx/e'.      ]\n\nAutonomous System Information:\na. [AS Number]                  17511\nb. [AS Name]                    K-Opticom\ng. [Organization]               K-Opticom Corporation\nm. [Administrative Contact]     JP00014196\nn. [Technical Contact]          JP00014196\no. [IMPORT]                     \np. [EXPORT]                     \n[Assigned Date]                 2001/01/26\n[Last Update]                   2009/05/08 16:41:06(JST)\n"
-}
