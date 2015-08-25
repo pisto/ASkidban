@@ -9,7 +9,7 @@ local lfs = require"lfs"
 
 local oldcd = lfs.currentdir()
 local script, sep = arg[0], package.config:sub(1, 1)
-lfs.chdir(script:match(".*%" .. sep))
+lfs.chdir(script:match(".*%" .. sep) or ".")
 
 local fp, L, ip = require"kblibs.fp", require"kblibs.lambda", require"kblibs.ip"
 local map = fp.map
