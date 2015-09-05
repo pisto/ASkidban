@@ -20,7 +20,7 @@ local function fetchranges(AS, force)
     :close()
   data.ranges = map.il(function(_, ips)
     return tostring(assert(ip.ip(ips), "API returned bad range specification: " .. ips))
-  end, json.decode(j).ipv4s)
+  end, assert(json.decode(j), "Failed to get ip ranges from json API").ipv4s)
   db:setdata(AS, data)
   return data.ranges
 end
