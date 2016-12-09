@@ -1,5 +1,5 @@
 {
   "whois":"query : AS38689\n\n\n# KOREAN(UTF8)\n\n한국인터넷진흥원은 국내 인터넷주소자원을 관리하는 기관입니다.\n조회하신 AS번호는 APNIC을 통해 한국에 할당되었으며, 향후 회원기관에게 배정하기 위하여 한국인터넷진흥원에서 임시로 보유 및 관리하고 있습니다.\n조회하신 AS번호에 대한 문의사항은 hostmaster@kisa.or.kr로 보내주시기 바랍니다.\n\n\n# ENGLISH\n\nKRNIC is not an ISP but a National Internet Registry similar to APNIC.\nThe AS Number is distributed from APNIC to KRNIC.\nIf you have any question with the AS Number, please contact hostmaster@kisa.or.kr.\n\n\n- KISA/KRNIC Whois Service -\n\n\n\n",
   "pdb":false,
-  "ranges":["111.67.224.0/19","114.141.40.0/21","117.104.190.0/24","119.161.0.0/19","183.177.68.0/22","202.93.6.0/23","202.165.108.0/23","203.110.236.0/24"]
+  "ranges":[]
 }
