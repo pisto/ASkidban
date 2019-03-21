@@ -1,4 +1,0 @@
-{
-  "pdb":false,
-  "whois":"[ JPNIC database provides information regarding IP address and ASN. Its use   ]\n[ is restricted to network administration purposes. For further information,  ]\n[ use 'whois -h whois.nic.ad.jp help'. To only display English output,        ]\n[ add '/e' at the end of command, e.g. 'whois -h whois.nic.ad.jp xxx/e'.      ]\n\nAutonomous System Information:\na. [AS Number]                  9609\nb. [AS Name]                    EACCESS\ng. [Organization]               Ymobile Corporation\nm. [Administrative Contact]     JP00047259\nn. [Technical Contact]          JP00047259\no. [IMPORT]                     \np. [EXPORT]                     \n[Assigned Date]                 2000/03/21\n[Last Update]                   2014/08/13 10:56:38(JST)\n"
-}

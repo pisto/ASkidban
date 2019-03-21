@@ -1,4 +1,0 @@
-{
-  "whois":"[ JPNIC database provides information regarding IP address and ASN. Its use   ]\n[ is restricted to network administration purposes. For further information,  ]\n[ use 'whois -h whois.nic.ad.jp help'. To only display English output,        ]\n[ add '/e' at the end of command, e.g. 'whois -h whois.nic.ad.jp xxx/e'.      ]\n\nAutonomous System Information:\na. [AS Number]                  9615\nb. [AS Name]                    TEES\ng. [Organization]               TOYOHASHI CABLE NETWORK INC.\nm. [Administrative Contact]     DO153JP\nn. [Technical Contact]          NS2429JP\no. [IMPORT]                     \np. [EXPORT]                     \n[Assigned Date]                 2000/04/19\n[Last Update]                   2005/09/06 12:32:39(JST)\n",
-  "pdb":false
-}

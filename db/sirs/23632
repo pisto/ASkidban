@@ -1,4 +1,0 @@
-{
-  "whois":"[ JPNIC database provides information regarding IP address and ASN. Its use   ]\n[ is restricted to network administration purposes. For further information,  ]\n[ use 'whois -h whois.nic.ad.jp help'. To only display English output,        ]\n[ add '/e' at the end of command, e.g. 'whois -h whois.nic.ad.jp xxx/e'.      ]\n\nAutonomous System Information:\na. [AS Number]                  23632\nb. [AS Name]                    TVT-NET\ng. [Organization]               TVT Tsuyama Co.,Ltd.\nm. [Administrative Contact]     JS1352JP\nn. [Technical Contact]          JS1352JP\no. [IMPORT]                     from AS23642 100 accept ANY\no. [IMPORT]                     from AS9622 100 accept ANY\np. [EXPORT]                     to AS23642 announce AS23632\np. [EXPORT]                     to AS9622 announce AS23632\n[Assigned Date]                 2003/05/30\n[Last Update]                   2005/03/08 11:06:06(JST)\n",
-  "pdb":false
-}
