@@ -54,7 +54,7 @@ and you get three compiled lists:
 - `compiled/ipv4`: list of IP ranges associated to *kids*
 - `compiled/ipv4_compact`: same as `compiled/ipv4` but the IP range is encoded as `ip * 0x40 + mask`, and printed in decimal format.
 
-The compile step makes use of the looking glass of [Hurricane Electric](http://bgp.he.net/), through this [API](https://www.enjen.net/asn-blocklist/).
+The compile step makes use of [RIPE Stats](https://stat.ripe.net/), through this [API](https://www.enjen.net/asn-blocklist/).
 
 ## Dependencies
 
